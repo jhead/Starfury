@@ -9,7 +9,7 @@ public class BitConverter {
 	 */
 	
 	public static byte[] toBytes( Integer value ) {
-		return ByteBuffer.allocate( 4 ).putInt( value ).array();
+		return ByteBuffer.allocate( 4 ).putInt( value ).order( ByteOrder.LITTLE_ENDIAN ).array();
 	}
 	
 	public static Integer toInteger( byte[] data ) {
@@ -21,7 +21,7 @@ public class BitConverter {
 	 */
 	
 	public static byte[] toBytes( Float value ) {
-		return ByteBuffer.allocate( 4 ).putFloat( value ).array();
+		return ByteBuffer.allocate( 4 ).putFloat( value ).order( ByteOrder.LITTLE_ENDIAN ).array();
 	}
 	
 	public static Float toFloat( byte[] data ) {
