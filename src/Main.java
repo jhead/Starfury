@@ -6,6 +6,6 @@ public class Main
     public static void main(String[] args)
     {
         // TODO: Configuration
-        new Server().run();
+        new Server(null).run();
     }
 }

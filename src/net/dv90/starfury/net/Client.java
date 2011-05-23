@@ -1,4 +1,5 @@
-public class Client {
+package net.dv90.starfury.net;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
