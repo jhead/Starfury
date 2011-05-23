@@ -79,7 +79,7 @@ public class Client extends Thread {
 	}
 	
 	public void disconnect() {
-		if ( state != NetworkState.Running || state != NetworkState.Error )
+		if ( state != NetworkState.Running && state != NetworkState.Error )
 			return;
 		
 		state = NetworkState.Closing;
