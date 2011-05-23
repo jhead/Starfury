@@ -1,5 +1,5 @@
 
-import net.dv90.starfury.Server;
+import net.dv90.starfury.net.Server;
 
 public class Main
 {
