@@ -16,6 +16,7 @@ public class Client extends Thread {
     private int clientId;
 
     private NetworkState state = NetworkState.Closed;
+    private boolean authenticated = false;
 
     public Client( Server server, Socket socket, int clientId ) {
             state = NetworkState.Starting;
@@ -23,6 +24,8 @@ public class Client extends Thread {
             this.server = server;
             this.socket = socket;
             this.clientId = clientId;
+            
+            authenticated = ( server.usingPassword() ? false : true );
 
             try {
                     in = socket.getInputStream();
@@ -147,9 +150,14 @@ public class Client extends Thread {
         Logger.log(LogLevel.DEBUG, "Received " + packet.getProtocol().toString() + " packet. [" + this.toString() + "]");
         Packet response = null;
         
-        switch( packet.getProtocol() )
+        if ( !authenticated && packet.getProtocol() != Protocol.ConnectRequest && packet.getProtocol() != Protocol.PasswordResponse ) {
+        	disconnect( "Illegal packet received." );
+        	
+        	return;
+        }
+        
+    	switch( packet.getProtocol() )
         {
-        	// Received when a client first connects
             case ConnectRequest:
             	if ( !new String( packet.getData() ).equals( server.getClientVersion() ) ) {
             		disconnect( "Incorrect client version." );
@@ -164,7 +172,14 @@ public class Client extends Thread {
                     response = new Packet( Protocol.RequestPlayerData );
                     response.append( BitConverter.toBytes( clientId ) );
                 }
+                
                 break;
+            
+            case PlayerData:
+            	Logger.log( LogLevel.INFO, BitConverter.toHexString( packet.getData() ) );
+            	
+            	
+            	break;
                 
             case PasswordResponse:
             	if ( server.usingPassword() ) {
@@ -173,16 +188,22 @@ public class Client extends Thread {
             		if ( password == null || !password.equals( server.getPassword() ) ) {
             			disconnect( "Incorrect password." );
             		} else {
+            			authenticated = true;
+            			
             			response = new Packet( Protocol.RequestPlayerData );
             			response.append( BitConverter.toBytes( clientId ) );
             		}
+            		
+                	break;
             	}
-            	break;
             	
             default:
             	disconnect( "Illegal packet received." );
+            	
                 break;
         }
+        
+        
 
         if(response != null)
         {

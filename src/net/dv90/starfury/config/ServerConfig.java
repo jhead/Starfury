@@ -2,7 +2,6 @@ package net.dv90.starfury.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -68,10 +67,18 @@ public class ServerConfig
     {
        return props.getProperty(key, defaultValue);
     }
+    
+    public Integer getValue( String key, Integer defaultValue) {
+    	try {
+    		return Integer.parseInt( getValue( key, "" ) );
+    	} catch ( Exception e ) {
+    		return defaultValue;
+    	}
+    }
 
     public void setValue(String key, Object value)
     {
-        props.put(key, value);
+        props.put(key, value.toString() );
     }
 
 }

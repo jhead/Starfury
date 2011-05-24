@@ -20,6 +20,13 @@ public class Logger
     		System.out.println( Logger.getTimestamp() + "[" + level + "] " + msg );
     }
     
+    public static void setLevel( LogLevel level ) {
+    	if ( level == null )
+    		return;
+    	
+    	currentLevel = level;
+    }
+    
     public static String prepare( LogLevel level, String msg ) {
     	return Logger.getTimestamp() + "[" + level + "] " + msg;
     }

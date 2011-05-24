@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import net.dv90.starfury.logging.*;
 import net.dv90.starfury.config.ServerConfig;
@@ -36,25 +35,16 @@ public class Server implements Runnable
 
     private void setupConfig()
     {
-        String ip = config.getValue("server-ip", "0.0.0.0");
-        int port = 7777;
-        int config_MaxPlayers = 8;
+        String ip = config.getValue( "server-ip", "127.0.0.1" );
+        bindPort = (int) config.getValue( "server-port", 7777 );
+        bindAddress = new InetSocketAddress( ip, bindPort );
+        
+        Logger.setLevel( LogLevel.valueOf( config.getValue( "log-level", "DEBUG" ) ) );
 
-        try
-        {
-            port = Integer.parseInt(config.getValue("server-port", "7777"));
-            
-            config_MaxPlayers = Integer.parseInt( config.getValue( "max-players", "8" ) );
-        } catch (Exception ex) {
-            Logger.log(LogLevel.ERROR, ex.toString());
-        }
-
-        bindAddress = new InetSocketAddress(ip, port);
-        bindPort = port;
-        maxPlayers = config_MaxPlayers;
-
+        maxPlayers = (int) config.getValue( "max-players", 8 );
+        clientVersion = "Terraria" + config.getValue( "client-version", "0" ).trim();
+        
         serverPassword = config.getValue("server-password", "").trim();
-        clientVersion = "Terraria" + config.getValue( "client-version", "" ).trim();
     }
 
     public void run()
