@@ -38,6 +38,10 @@ public class Client extends Thread {
             Logger.log(LogLevel.INFO, "Client connected [" + toString() + "]");
     }
 
+    public Integer getClientID() {
+    	return clientId;
+    }
+    
     public void write( byte[] data ) {
             try {
                 out.write( data );
@@ -142,10 +146,17 @@ public class Client extends Thread {
     {
         Logger.log(LogLevel.DEBUG, "Received " + packet.getProtocol().toString() + " packet. [" + this.toString() + "]");
         Packet response = null;
+        
         switch( packet.getProtocol() )
         {
         	// Received when a client first connects
             case ConnectRequest:
+            	if ( !new String( packet.getData() ).equals( server.getClientVersion() ) ) {
+            		disconnect( "Incorrect client version." );
+            		
+            		break;
+            	}
+            	
                 if( server.usingPassword() )
                 {
                     response = new Packet( Protocol.PasswordRequest );
