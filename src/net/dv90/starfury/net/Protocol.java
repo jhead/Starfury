@@ -8,9 +8,14 @@ public enum Protocol {
 	RequestPlayerData( 3 ),
 	PlayerData( 4 ),
 	InventoryData( 5 ),
-	RequestWorldData( 6 );
+	RequestWorldData( 6 ),
+        WorldData( 7 ),
+        SetSpawn ( 8 ),
+        PlayerInfo ( 16 ),
+        PasswordRequest ( 25 ),
+        PasswordResponse ( 26 );
 	
-	private static HashMap< Integer, Protocol > lookupMap = new HashMap<Integer, Protocol>();
+	private static final HashMap< Integer, Protocol > lookupMap = new HashMap<Integer, Protocol>();
 	
 	static {
 		for ( Protocol proto : Protocol.values() ) {

@@ -63,7 +63,6 @@ public class Client extends Thread {
                                 throw new Exception( "Insufficient bytes available to fill packet length" );
                             }
 
-
                             // TODO: Whatever is done with the data.
 
                     } catch ( Exception  e ) {
