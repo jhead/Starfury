@@ -3,7 +3,7 @@ package net.dv90.starfury.net;
 import java.util.HashMap;
 
 public enum Protocol {
-	Connect( 1 ),
+	ConnectRequest( 1 ),
 	Disconnect( 2 ),
 	RequestPlayerData( 3 ),
 	PlayerData( 4 ),

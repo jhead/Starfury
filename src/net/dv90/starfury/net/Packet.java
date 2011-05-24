@@ -20,9 +20,9 @@ public class Packet {
 			return;
 		
 		byte[] newBuffer = new byte[ capacity ];
-		
-		System.arraycopy( buffer, 0, newBuffer, 0, capacity );
-		
+
+                System.arraycopy( buffer, 0, newBuffer, 0, ( buffer.length > capacity ? capacity : buffer.length ) );
+
 		buffer = newBuffer;
 	}
 	
@@ -39,8 +39,8 @@ public class Packet {
 			setCapacity( size );
 		
 		byte[] data = new byte[ size + 5 ];
-		
-		System.arraycopy( BitConverter.toBytes( size ), 0, data, 0, 4 );
+
+		System.arraycopy( BitConverter.toBytes( size + 1 ), 0, data, 0, 4 );
 		System.arraycopy( BitConverter.toBytes( protocol.getID() ), 0, data, 4, 1 );
 		System.arraycopy( buffer, 0, data, 5, buffer.length );
 		
