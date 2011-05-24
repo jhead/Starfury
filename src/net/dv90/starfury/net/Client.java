@@ -1,8 +1,12 @@
 package net.dv90.starfury.net;
 
+import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+
+import net.dv90.starfury.Player;
+import net.dv90.starfury.Player.PlayerColor;
 import net.dv90.starfury.logging.*;
 
 import net.dv90.starfury.util.BitConverter;
@@ -143,8 +147,6 @@ public class Client extends Thread {
             }
     }
 
-    // I doubt this is how we want to go about doing this, I'm just doing this for the sake of testing
-    // These packets should work but I think the byte order is wrong.
     public void handlePacket(Packet packet) throws Exception
     {
         Logger.log(LogLevel.DEBUG, "Received " + packet.getProtocol().toString() + " packet. [" + this.toString() + "]");
@@ -176,9 +178,43 @@ public class Client extends Thread {
                 break;
             
             case PlayerData:
-            	Logger.log( LogLevel.INFO, BitConverter.toHexString( packet.getData() ) );
+            	byte[] data = packet.getData();
+            	int index = 0;
             	
+            	Integer clientID = ( int ) data[ index ];
+            	index++;
             	
+            	if ( clientID != this.clientId ) {
+            		disconnect( "Client ID mismatch." );
+            		
+            		break;
+            	}
+            	
+            	Player player = new Player( this );
+            	
+            	player.setHairstyle( ( int ) data[ index + 1 ] );
+            	index++;
+            	
+            	for ( PlayerColor part : PlayerColor.values() ) {
+            		int r = ( int ) data[ index ];
+            		if ( r == -1 ) r = 255;
+            		
+            		int g = ( int ) data[ index + 1 ];
+            		if ( g == -1 ) g = 255;
+            		
+            		int b = ( int ) data[ index + 2 ];
+            		if ( b == -1 ) b = 255;
+            		
+            		index += 3;
+            		
+            		Color color = new Color( r, g, b );
+            		player.setColor( part, color );
+            	}
+            	
+            	byte[] name = new byte[ data.length - index ];
+            	System.arraycopy( data, index, name, 0, name.length );
+            	
+            	player.setName( new String( name ) );            	
             	break;
                 
             case PasswordResponse:
@@ -203,8 +239,6 @@ public class Client extends Thread {
                 break;
         }
         
-        
-
         if(response != null)
         {
             Logger.log(LogLevel.DEBUG, "Sent " + response.getProtocol().toString() + " packet. [" + this.toString() + "]");

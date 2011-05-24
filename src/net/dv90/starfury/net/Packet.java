@@ -3,6 +3,8 @@ package net.dv90.starfury.net;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import net.dv90.starfury.logging.LogLevel;
+import net.dv90.starfury.logging.Logger;
 import net.dv90.starfury.util.BitConverter;
 
 public class Packet {
@@ -59,5 +61,29 @@ public class Packet {
 		System.arraycopy( ByteBuffer.wrap( buffer ).order( ByteOrder.LITTLE_ENDIAN ).array(), 0, data, 5, buffer.length );
 		
 		return data;
+	}
+	
+	public static Packet rebuild( byte[] data ) {
+		byte[] length = new byte[ 4 ];
+		System.arraycopy( data, 0, length, 0, 4 );
+		
+		byte[] idArray = new byte[ 1 ];
+		System.arraycopy( data, 4, idArray, 0, 1 );
+		
+		Integer id = BitConverter.toInteger( idArray );
+		
+		Protocol protocol = Protocol.lookup( id );
+		
+		if ( protocol == null ) {
+			Logger.log( LogLevel.ERROR, "Could not rebuild a packet with illegal ID " + id );
+			
+			return null;
+		}
+		
+		Packet packet = new Packet( protocol );
+		
+		System.arraycopy( data, 5, packet.buffer, 0, data.length - 5 );
+		
+		return packet;
 	}
 }

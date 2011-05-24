@@ -16,6 +16,17 @@ public class BitConverter {
 		return ByteBuffer.wrap( data ).order( ByteOrder.LITTLE_ENDIAN ).getInt();
 	}
 	
+	public static Integer toInteger( byte[] data, int start, int length ) {
+		if ( length != 4 )
+			return null;
+		
+		byte[] copy = new byte[ length ];
+		
+		System.arraycopy( data, start, copy, 0, length );
+		
+		return toInteger( copy );
+	}
+	
 	/*
 	 * Float
 	 */
@@ -44,5 +55,15 @@ public class BitConverter {
 		}
 		
 		return buffer.toString().trim().toUpperCase();
+	}
+	
+	public static String toString( byte[] data ) {
+		StringBuffer buffer = new StringBuffer();
+		
+		for ( byte byt : data ) {
+			buffer.append( " " + Integer.toString( ( int ) byt ) );
+		}
+		
+		return buffer.toString().trim();
 	}
 }
