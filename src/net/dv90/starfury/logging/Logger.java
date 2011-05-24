@@ -5,8 +5,8 @@ import java.util.Calendar;
 
 public class Logger
 {
-	private static LogLevel currentLevel = LogLevel.DEBUG;
-	private static ErrorLogger errorLogger = new ErrorLogger( System.out );
+    private static LogLevel currentLevel = LogLevel.DEBUG;
+    private static ErrorLogger errorLogger = new ErrorLogger( System.out );
     private static Calendar cal;
 
     public static String getTimestamp()
@@ -16,7 +16,7 @@ public class Logger
     }
     
     public static void log( LogLevel level, String msg ) {
-    	if ( currentLevel.getLevel() >= level.getLevel() )
+    	if ( level.getLevel() >= currentLevel.getLevel() )
     		System.out.println( Logger.getTimestamp() + "[" + level + "] " + msg );
     }
     

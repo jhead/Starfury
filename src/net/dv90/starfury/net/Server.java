@@ -74,19 +74,19 @@ public class Server implements Runnable
                 Integer clientID = getNextClientID();
                 
                 if ( clientID == null ) {
-                	if ( !clientSocket.isOutputShutdown() ) {
-	                	Packet packet = new Packet( Protocol.Disconnect );
-	                	packet.append( "Server is full.".getBytes() );
-	                	
-	                	OutputStream os = clientSocket.getOutputStream();
-	                	os.write( packet.create() );
-	                	os.flush();
-                	}
-                	
-                	clientSocket.close();
+                    if ( !clientSocket.isOutputShutdown() ) {
+                            Packet packet = new Packet( Protocol.Disconnect );
+                            packet.append( "Server is full.".getBytes() );
+
+                            OutputStream os = clientSocket.getOutputStream();
+                            os.write( packet.create() );
+                            os.flush();
+                    }
+
+                    clientSocket.close();
                 } else {
-                	client = new Client(this, clientSocket, clientID );
-                	
+                    client = new Client(this, clientSocket, clientID );
+                    
                     clients.add( client );
                 }
             } catch(Exception ex) {
@@ -111,7 +111,7 @@ public class Server implements Runnable
         }
         catch(Exception ex)
         {
-            Logger.log(LogLevel.FATAL, "Server cannot bind to " + bindAddress.toString().substring(1) + ".\n" + ex);
+            Logger.log(LogLevel.FATAL, "Server cannot bind to " + bindAddress.toString().substring( 1 ) + ".\n" + ex);
             state = NetworkState.Closed;
         }
     }
