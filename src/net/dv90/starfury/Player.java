@@ -7,7 +7,7 @@ import net.dv90.starfury.net.Client;
 
 public class Player {
 	private Client client;
-	private String name = "Unnamed";
+	private String name = null;
 	private HashMap< PlayerColor, Color > colors = new HashMap< Player.PlayerColor, Color >();
 	private HashMap< PlayerStat, Integer > stats = new HashMap< PlayerStat, Integer >();
 	private int hairStyle = 0;

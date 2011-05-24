@@ -232,6 +232,25 @@ public class Client extends Thread {
             	player.setStat( PlayerStat.MaxHealth, BitConverter.toInteger( data, index, 2 ) );
             	
             	break;
+            	
+            case PlayerManaUpdate:
+            	if ( ( int ) data[ index ] != this.clientId ) {
+            		disconnect( "Client ID mismatch." );
+            		
+            		break;
+            	}
+            	index++;
+            	
+            	player.setStat( PlayerStat.Mana, BitConverter.toInteger( data, index, 2 ) );
+            	index += 2;
+            	
+            	player.setStat( PlayerStat.MaxMana, BitConverter.toInteger( data, index, 2 ) );
+            	
+            	break;
+            	
+            case InventoryData:
+            	
+            	break;
                 
             case PasswordResponse:
             	if ( server.usingPassword() ) {
@@ -266,7 +285,13 @@ public class Client extends Thread {
     @Override
     public String toString()
     {
-        // TODO: Add username if user has logged in.
-        return socket.getRemoteSocketAddress().toString();
+    	StringBuffer buffer = new StringBuffer();
+    	
+    	if ( player.getName() != null )
+    		buffer.append( player.getName() + "@" );
+    	
+    	buffer.append( socket.getRemoteSocketAddress().toString().substring( 1 ) );
+    	
+        return buffer.toString();
     }
 }

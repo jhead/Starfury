@@ -14,7 +14,7 @@ public enum Protocol {
     PlayerHealthUpdate( 16 ),
     PasswordRequest ( 37 ),
     PasswordResponse ( 38 ),
-    PlayerManaUpdate( 52 );
+    PlayerManaUpdate( 42 );
 	
 	private static final HashMap< Integer, Protocol > lookupMap = new HashMap<Integer, Protocol>();
 	
