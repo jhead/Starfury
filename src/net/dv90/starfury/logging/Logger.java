@@ -15,7 +15,7 @@ public class Logger
 
     public static void log(LogLevel level, String msg)
     {
-        System.out.println(Logger.getTimestamp() + " [" + level + "]" + msg);
+        System.out.println(Logger.getTimestamp() + " [" + level + "] " + msg);
     }
 
 }
