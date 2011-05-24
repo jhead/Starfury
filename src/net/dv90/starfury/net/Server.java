@@ -43,6 +43,7 @@ public class Server implements Runnable
         }
 
         bindAddress = new InetSocketAddress(ip, port);
+        bindPort = port;
 
         serverPassword = config.getValue("server-password", "").trim();
     }
@@ -75,13 +76,13 @@ public class Server implements Runnable
         try
         {
             socket = new ServerSocket();
-            socket.bind(bindAddress);
-            Logger.log(LogLevel.INFO, "Server bound to " + bindAddress.toString().substring(1) + ".");
+            socket.bind(bindAddress, bindPort );
+            Logger.log(LogLevel.INFO, "Server bound to " + bindAddress.toString().substring( 1 ) + ":" + Integer.toString( bindPort ) + ".");
             state = NetworkState.Running;
         }
         catch(Exception ex)
         {
-            Logger.log(LogLevel.FATAL, "Server cannot bind to " + bindAddress.toString().substring(1) + "." + ex);
+            Logger.log(LogLevel.FATAL, "Server cannot bind to " + bindAddress.toString().substring(1) + ":" + Integer.toString( bindPort ) + ".\n" + ex);
             state = NetworkState.Closed;
         }
     }
