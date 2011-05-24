@@ -58,7 +58,7 @@ public class Console extends Thread
 		try {
 			String line = null;
 			while ( ( line = in.readLine() ) != null ) {
-				// TODO: Console actions
+				System.out.println( "Command Support not yet implemented, '" + line + "' is unrecognized" );
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();

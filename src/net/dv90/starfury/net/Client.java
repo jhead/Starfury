@@ -85,7 +85,13 @@ public class Client extends Thread {
                             // Malformed packets cause java to run out of memory if we don't cap the length
 
                             id = in.read();
-
+                            proto = Protocol.lookup( id );
+                            
+                            if ( proto == null )
+                            	throw new Exception( "Unrecognized packet with ID " + id );
+                            
+                            packet = new Packet( proto );
+                            
                             data = new byte[ length ];
                             if ( in.read( data ) != length ) {
                             	if ( socket.isClosed() )
@@ -93,18 +99,9 @@ public class Client extends Thread {
                             	
                                 throw new Exception( "Insufficient bytes available to fill packet length" );
                             }
-
-                            // TODO: Whatever is done with the data.
-                            proto = Protocol.lookup(id);
                             
-                            if ( proto == null )
-                            	throw new Exception( "Unrecognized packet with ID " + id );
-                            
-                            packet = new Packet(proto);
                             packet.append( data );
-                            
-                            handlePacket(packet);
-
+                            handlePacket( packet );
                     } catch ( Exception  e ) {
                             if ( state == NetworkState.Running ) {
                                     e.printStackTrace();
@@ -116,7 +113,7 @@ public class Client extends Thread {
                     }
             }
 
-            server.removeClient(this);
+            
             disconnect();
             Logger.log(LogLevel.INFO, "Client disconnected [" + this.toString() + "]");
     }
@@ -125,11 +122,12 @@ public class Client extends Thread {
     	disconnect( "Connection closed by server." );
     }
     
-    public void disconnect( String reason )
-    {
+    public void disconnect( String reason ) {
             if ( state != NetworkState.Running && state != NetworkState.Error )
                     return;
 
+            server.removeClient(this);
+            
             state = NetworkState.Closing;
             
             if ( !socket.isOutputShutdown() ) {
