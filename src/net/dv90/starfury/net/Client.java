@@ -40,10 +40,10 @@ public class Client extends Thread {
 
     public void write( byte[] data ) {
             try {
-                    out.write( data );
-                    out.flush();
+                out.write( data );
+                out.flush();
             } catch ( Exception e ) {
-                    e.printStackTrace();
+                e.printStackTrace();
             }
     }
 	
@@ -60,6 +60,9 @@ public class Client extends Thread {
                     try {
                             header = new byte[ 4 ];
                             if ( in.read( header ) != 4 ) {
+                            	if ( socket.isClosed() )
+                            		break;
+                            	
                                 throw new Exception( "Malformed packet header" );
                             }
 
@@ -71,12 +74,21 @@ public class Client extends Thread {
 
                             data = new byte[ length ];
                             if ( in.read( data ) != length ) {
+                            	if ( socket.isClosed() )
+                            		break;
+                            	
                                 throw new Exception( "Insufficient bytes available to fill packet length" );
                             }
 
                             // TODO: Whatever is done with the data.
                             proto = Protocol.lookup(id);
+                            
+                            if ( proto == null )
+                            	throw new Exception( "Unrecognized packet with ID " + id );
+                            
                             packet = new Packet(proto);
+                            packet.append( data );
+                            
                             handlePacket(packet);
 
                     } catch ( Exception  e ) {
@@ -95,13 +107,24 @@ public class Client extends Thread {
             Logger.log(LogLevel.INFO, "Client disconnected [" + this.toString() + "]");
     }
 	
-    public void disconnect()
+    public void disconnect() {
+    	disconnect( "Connection closed by server." );
+    }
+    
+    public void disconnect( String reason )
     {
             if ( state != NetworkState.Running && state != NetworkState.Error )
                     return;
 
             state = NetworkState.Closing;
-
+            
+            if ( !socket.isOutputShutdown() ) {
+            	Packet packet = new Packet( Protocol.Disconnect );
+            	packet.append( reason.getBytes() );
+            	
+            	write( packet.create() );
+            }
+            
             try {
                     socket.close();
 
@@ -118,32 +141,44 @@ public class Client extends Thread {
     public void handlePacket(Packet packet) throws Exception
     {
         Logger.log(LogLevel.DEBUG, "Received " + packet.getProtocol().toString() + " packet. [" + this.toString() + "]");
-
         Packet response = null;
         switch( packet.getProtocol() )
         {
+        	// Received when a client first connects
             case ConnectRequest:
                 if( server.usingPassword() )
                 {
                     response = new Packet( Protocol.PasswordRequest );
-                    response.setCapacity(1);
                 } else {
                     response = new Packet( Protocol.RequestPlayerData );
-                    response.append( new byte[] { (byte)clientId } );
+                    response.append( BitConverter.toBytes( clientId ) );
                 }
                 break;
                 
+            case PasswordResponse:
+            	if ( server.usingPassword() ) {
+            		String password = new String( packet.getData() );
+            		
+            		if ( password == null || !password.equals( server.getPassword() ) ) {
+            			disconnect( "Incorrect password." );
+            		} else {
+            			response = new Packet( Protocol.RequestPlayerData );
+            			response.append( BitConverter.toBytes( clientId ) );
+            		}
+            	}
+            	break;
+            	
             default:
+            	disconnect( "Illegal packet received." );
                 break;
         }
 
         if(response != null)
         {
             Logger.log(LogLevel.DEBUG, "Sent " + response.getProtocol().toString() + " packet. [" + this.toString() + "]");
-            out.write( response.create() );
+            
+            write( response.create() );
         }
-
-        out.flush();
     }
 
     @Override

@@ -1,5 +1,8 @@
 package net.dv90.starfury.net;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import net.dv90.starfury.util.BitConverter;
 
 public class Packet {
@@ -34,6 +37,17 @@ public class Packet {
 		size += data.length;
 	}
 	
+	public void append( byte data ) {
+		append( new byte[] { data } );
+	}
+	
+	public byte[] getData() {
+		if ( size > buffer.length )
+			setCapacity( size );
+		
+		return buffer;
+	}
+	
 	public byte[] create() {
 		if ( buffer.length > size )
 			setCapacity( size );
@@ -42,7 +56,7 @@ public class Packet {
 
 		System.arraycopy( BitConverter.toBytes( size + 1 ), 0, data, 0, 4 );
 		System.arraycopy( BitConverter.toBytes( protocol.getID() ), 0, data, 4, 1 );
-		System.arraycopy( buffer, 0, data, 5, buffer.length );
+		System.arraycopy( ByteBuffer.wrap( buffer ).order( ByteOrder.LITTLE_ENDIAN ).array(), 0, data, 5, buffer.length );
 		
 		return data;
 	}

@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class Logger
 {
-
+	
     private static Calendar cal;
 
     public static String getTimestamp()
