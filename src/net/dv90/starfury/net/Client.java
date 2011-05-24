@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import net.dv90.starfury.Player;
 import net.dv90.starfury.Player.PlayerColor;
+import net.dv90.starfury.Player.PlayerStat;
 import net.dv90.starfury.logging.*;
 
 import net.dv90.starfury.util.BitConverter;
@@ -21,6 +22,8 @@ public class Client extends Thread {
 
     private NetworkState state = NetworkState.Closed;
     private boolean authenticated = false;
+    
+    Player player = new Player( this );
 
     public Client( Server server, Socket socket, int clientId ) {
             state = NetworkState.Starting;
@@ -158,10 +161,13 @@ public class Client extends Thread {
         	return;
         }
         
+        int index = 0;
+        byte[] data = packet.getData();
+        
     	switch( packet.getProtocol() )
         {
             case ConnectRequest:
-            	if ( !new String( packet.getData() ).equals( server.getClientVersion() ) ) {
+            	if ( !new String( data ).equals( server.getClientVersion() ) ) {
             		disconnect( "Incorrect client version." );
             		
             		break;
@@ -177,10 +183,7 @@ public class Client extends Thread {
                 
                 break;
             
-            case PlayerData:
-            	byte[] data = packet.getData();
-            	int index = 0;
-            	
+            case PlayerData:            	
             	Integer clientID = ( int ) data[ index ];
             	index++;
             	
@@ -189,8 +192,6 @@ public class Client extends Thread {
             		
             		break;
             	}
-            	
-            	Player player = new Player( this );
             	
             	player.setHairstyle( ( int ) data[ index + 1 ] );
             	index++;
@@ -215,6 +216,21 @@ public class Client extends Thread {
             	System.arraycopy( data, index, name, 0, name.length );
             	
             	player.setName( new String( name ) );            	
+            	break;
+            	
+            case PlayerHealthUpdate:
+            	if ( ( int ) data[ index ] != this.clientId ) {
+            		disconnect( "Client ID mismatch." );
+            		
+            		break;
+            	}
+            	index++;
+            	
+            	player.setStat( PlayerStat.Health, BitConverter.toInteger( data, index, 2 ) );
+            	index += 2;
+            	
+            	player.setStat( PlayerStat.MaxHealth, BitConverter.toInteger( data, index, 2 ) );
+            	
             	break;
                 
             case PasswordResponse:

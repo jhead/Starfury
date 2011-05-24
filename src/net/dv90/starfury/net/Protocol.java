@@ -10,10 +10,11 @@ public enum Protocol {
 	InventoryData( 5 ),
 	RequestWorldData( 6 ),
     WorldData( 7 ),
-    SetSpawn ( 8 ),
-    PlayerInfo ( 16 ),
+    SetSpawn( 8 ),
+    PlayerHealthUpdate( 16 ),
     PasswordRequest ( 37 ),
-    PasswordResponse ( 38 );
+    PasswordResponse ( 38 ),
+    PlayerManaUpdate( 52 );
 	
 	private static final HashMap< Integer, Protocol > lookupMap = new HashMap<Integer, Protocol>();
 	

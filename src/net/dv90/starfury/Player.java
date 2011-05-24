@@ -9,7 +9,9 @@ public class Player {
 	private Client client;
 	private String name = "Unnamed";
 	private HashMap< PlayerColor, Color > colors = new HashMap< Player.PlayerColor, Color >();
+	private HashMap< PlayerStat, Integer > stats = new HashMap< PlayerStat, Integer >();
 	private int hairStyle = 0;
+	
 	
 	public Player( Client client ) {
 		this.client = client;
@@ -41,6 +43,20 @@ public class Player {
 		colors.put( part, color );
 	}
 	
+	public Integer getStat( PlayerStat stat ) {
+		if ( stat == null )
+			return null;
+		
+		return stats.get( stat );
+	}
+	
+	public void setStat( PlayerStat stat, Integer value ) {
+		if ( stat == null || value == null )
+			return;
+		
+		stats.put( stat, value );
+	}
+	
 	public Integer getHairstyle() {
 		return hairStyle;
 	}
@@ -57,5 +73,12 @@ public class Player {
 		Undershirt,
 		Pants,
 		Shoe
+	}
+	
+	public enum PlayerStat {
+		Health,
+		MaxHealth,
+		Mana,
+		MaxMana
 	}
 }

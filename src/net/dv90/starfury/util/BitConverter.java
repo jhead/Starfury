@@ -17,14 +17,20 @@ public class BitConverter {
 	}
 	
 	public static Integer toInteger( byte[] data, int start, int length ) {
-		if ( length != 4 )
+		if ( length > 4 || start + length > data.length )
 			return null;
 		
-		byte[] copy = new byte[ length ];
+		byte[] buffer = new byte[ 4 ];
 		
-		System.arraycopy( data, start, copy, 0, length );
+		System.arraycopy( data, start, buffer, 0, length );
 		
-		return toInteger( copy );
+		if ( length < 4 ) {
+			for ( int i = length; i < 4; i++ ) {
+				buffer[ i ] = ( byte ) 0;
+			}
+		}
+		
+		return toInteger( buffer );
 	}
 	
 	/*
