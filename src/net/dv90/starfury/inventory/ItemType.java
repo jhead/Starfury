@@ -3,7 +3,6 @@ package net.dv90.starfury.inventory;
 import java.util.HashMap;
 
 public enum ItemType {
-
     Empty( "" );
 
     private String name;

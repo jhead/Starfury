@@ -64,6 +64,10 @@ public class Server implements Runnable
         else
             this.world = WorldManager.load(worldName);
     }
+    
+    public World getWorld() {
+    	return world;
+    }
 
     public void run()
     {

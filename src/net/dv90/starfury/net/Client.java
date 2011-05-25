@@ -1,6 +1,7 @@
 package net.dv90.starfury.net;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -15,6 +16,7 @@ import net.dv90.starfury.logging.*;
 
 import net.dv90.starfury.util.BitConverter;
 import net.dv90.starfury.util.MathUtil;
+import net.dv90.starfury.world.World;
 
 public class Client extends Thread {
 
@@ -280,9 +282,27 @@ public class Client extends Thread {
             	break;
 
             case RequestWorldData:
-
-                // TODO
-
+            	response = new Packet( Protocol.WorldData );
+            	World world = server.getWorld();
+            	
+            	response.append( BitConverter.toBytes( ( int ) world.getTime() ) );
+            	response.append( BitConverter.toBytes( world.isDay() ? 1 : 0 )[ 0 ] );
+            	response.append( BitConverter.toBytes( world.getMoonPhase().getState() )[ 0 ] );
+            	response.append( BitConverter.toBytes( world.isBloodmoon() ? 1 : 0 )[ 0 ] );
+            	
+            	response.append( BitConverter.toBytes( world.getWidth() ) );
+            	response.append( BitConverter.toBytes( 60 ) );
+            	
+            	Point spawn = world.getSpawn();
+            	response.append( BitConverter.toBytes( spawn.x ) );
+            	response.append( BitConverter.toBytes( spawn.y ) );
+            	
+            	response.append( BitConverter.toBytes( world.getDirtLayer() ) );
+            	response.append( BitConverter.toBytes( world.getRockLayer() ) );
+            	
+            	response.append( BitConverter.toBytes( 0 ) ); // World ID
+            	response.append( world.getWorldName().getBytes() );
+            	
                 break;
                 
             case PasswordResponse:

@@ -23,11 +23,19 @@ public class Location {
     public float getX() {
         return x;
     }
+    
+    public int getXTile() {
+    	return ( int ) Math.floor( x );
+    }
 
     public float getY() {
         return y;
     }
 
+    public int getYTile() {
+    	return ( int ) Math.floor( y );
+    }
+    
     @Override
     public String toString() {
         return "(" + getX() + ", " + getY() + ")";
