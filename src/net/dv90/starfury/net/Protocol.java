@@ -10,7 +10,7 @@ public enum Protocol {
 	InventoryData( 5 ),
 	RequestWorldData( 6 ),
     WorldData( 7 ),
-    SetSpawn( 8 ),
+    TileBlockRequest( 8 ),
     PlayerHealthUpdate( 16 ),
     PasswordRequest ( 37 ),
     PasswordResponse ( 38 ),
