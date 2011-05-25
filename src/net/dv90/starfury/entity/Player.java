@@ -3,9 +3,10 @@ package net.dv90.starfury.entity;
 import java.awt.Color;
 import java.util.HashMap;
 
-import net.dv90.starfury.inventory.PlayerInventory;
-
 import net.dv90.starfury.net.Client;
+import net.dv90.starfury.net.Server;
+import net.dv90.starfury.misc.Location;
+import net.dv90.starfury.inventory.PlayerInventory;
 
 public class Player extends Entity {
     
@@ -14,16 +15,22 @@ public class Player extends Entity {
     private HashMap< PlayerColor, Color > colors = new HashMap< Player.PlayerColor, Color >();
     private HashMap< PlayerStat, Integer > stats = new HashMap< PlayerStat, Integer >();
     private PlayerInventory inventory;
+    private Location location;
     private int hairStyle = 0;
 
 
     public Player( Client client ) {
             this.client = client;
             this.inventory = new PlayerInventory();
+            this.location = new Location( client.getServer().getSpawnLocation() );
     }
 
     public Client getClient() {
             return client;
+    }
+
+    public Server getServer() {
+        return client.getServer();
     }
 
     public String getName() {

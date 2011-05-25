@@ -6,8 +6,12 @@ import java.net.ServerSocket;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+import net.dv90.starfury.misc.Location;
 import net.dv90.starfury.logging.*;
 import net.dv90.starfury.config.ServerConfig;
+import net.dv90.starfury.entity.Player;
+import net.dv90.starfury.world.World;
+import net.dv90.starfury.world.WorldManager;
 
 public class Server implements Runnable
 {
@@ -15,13 +19,17 @@ public class Server implements Runnable
     private ServerConfig config;
     private ServerSocket socket;
     private NetworkState state = NetworkState.Closed;
+
+    private World world;
     private ArrayList< Client > clients;
+    private Location spawnLocation;
 
     // Config
     private int bindPort;
     private InetSocketAddress bindAddress;
     private String serverPassword = "";
     private String clientVersion = "";
+    private String worldName = "";
     private Integer maxPlayers;
 
     public Server(ServerConfig config)
@@ -29,6 +37,8 @@ public class Server implements Runnable
         this.config = config;
         this.socket = null;
         this.clients = new ArrayList< Client >();
+        this.spawnLocation = new Location(0, 0);
+        this.world = null;
 
         setupConfig();
     }
@@ -43,12 +53,27 @@ public class Server implements Runnable
 
         maxPlayers = (int) config.getValue( "max-players", 8 );
         clientVersion = "Terraria" + config.getValue( "client-version", "0" ).trim();
-        
+        worldName = config.getValue( "world-name", "" ).trim();
         serverPassword = config.getValue("server-password", "").trim();
+    }
+
+    private void loadWorld() throws Exception
+    {
+        if( worldName.length() == 0 || worldName == null )
+            throw new Exception("No world specified.");
+        else
+            this.world = WorldManager.load(worldName);
     }
 
     public void run()
     {
+        try {
+            loadWorld();
+        } catch( Exception ex ) {
+            Logger.log( LogLevel.FATAL, ex.toString() );
+            return;
+        }
+        
         state = NetworkState.Starting;
         
         bindSocket();
@@ -146,12 +171,25 @@ Index: for ( int i = 0; i < maxPlayers; i++ ) {
     	return null;
     }
 
-    /*
     public ArrayList<Player> getPlayers()
     {
-        
+        ArrayList<Player> players = new ArrayList<Player>();
+
+        for( Client c : clients )
+        {
+            players.add(c.getPlayer());
+        }
+
+        return players;
     }
-    */
+
+    public Location getSpawnLocation() {
+        return new Location(spawnLocation);
+    }
+
+    public void setSpawnLocation( Location loc ) {
+        spawnLocation = new Location(loc);
+    }
     
     public int getPlayerCount()
     {

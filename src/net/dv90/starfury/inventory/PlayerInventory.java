@@ -4,11 +4,24 @@ import java.util.ArrayList;
 
 public class PlayerInventory {
 
+    public static final int MAX_INVENTORY_SLOTS = 52;
+    
     private ArrayList<ItemStack> slots;
 
     public PlayerInventory()
     {
         slots = new ArrayList<ItemStack>();
+        
+        fill(ItemType.Empty);
+    }
+
+    public void fill(ItemType type)
+    {
+        slots.clear();
+        for( int i = 0; i < PlayerInventory.MAX_INVENTORY_SLOTS; i++ )
+        {
+            slots.add( new ItemStack( type, 1) );
+        }
     }
 
     public ItemStack getSlot(int slot)
@@ -18,6 +31,9 @@ public class PlayerInventory {
 
     public void setSlot(int slot, ItemStack item)
     {
+        if( slot < 0 || slot > PlayerInventory.MAX_INVENTORY_SLOTS)
+            return;
+        
         slots.set(slot, item);
     }
 

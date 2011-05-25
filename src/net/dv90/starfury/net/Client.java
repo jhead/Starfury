@@ -5,12 +5,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import net.dv90.starfury.Player;
-import net.dv90.starfury.Player.PlayerColor;
-import net.dv90.starfury.Player.PlayerStat;
+import net.dv90.starfury.entity.Player;
+import net.dv90.starfury.entity.Player.PlayerColor;
+import net.dv90.starfury.entity.Player.PlayerStat;
+import net.dv90.starfury.inventory.ItemStack;
+import net.dv90.starfury.inventory.ItemType;
+import net.dv90.starfury.inventory.PlayerInventory;
 import net.dv90.starfury.logging.*;
 
 import net.dv90.starfury.util.BitConverter;
+import net.dv90.starfury.util.MathUtil;
 
 public class Client extends Thread {
 
@@ -22,8 +26,7 @@ public class Client extends Thread {
 
     private NetworkState state = NetworkState.Closed;
     private boolean authenticated = false;
-    
-    Player player = new Player( this );
+    private Player player;
 
     public Client( Server server, Socket socket, int clientId ) {
             state = NetworkState.Starting;
@@ -31,7 +34,8 @@ public class Client extends Thread {
             this.server = server;
             this.socket = socket;
             this.clientId = clientId;
-            
+
+            player = new Player(this);
             authenticated = ( server.usingPassword() ? false : true );
 
             try {
@@ -48,8 +52,16 @@ public class Client extends Thread {
             Logger.log(LogLevel.INFO, "Client connected [" + toString() + "]");
     }
 
+    public Server getServer() {
+        return server;
+    }
+
     public Integer getClientID() {
     	return clientId;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
     
     public void write( byte[] data ) {
@@ -196,13 +208,13 @@ public class Client extends Thread {
             	
             	for ( PlayerColor part : PlayerColor.values() ) {
             		int r = ( int ) data[ index ];
-            		if ( r == -1 ) r = 255;
+            		r = MathUtil.clamp(r, 0, 255);
             		
             		int g = ( int ) data[ index + 1 ];
-            		if ( g == -1 ) g = 255;
+            		g = MathUtil.clamp(g, 0, 255);
             		
             		int b = ( int ) data[ index + 2 ];
-            		if ( b == -1 ) b = 255;
+            		b = MathUtil.clamp(b, 0, 255);
             		
             		index += 3;
             		
@@ -247,8 +259,31 @@ public class Client extends Thread {
             	break;
             	
             case InventoryData:
-            	
+                if ( ( int ) data[ index ] != this.clientId ) {
+            		disconnect( "Client ID mismatch." );
+
+            		break;
+            	}
+                
+            	PlayerInventory inv = player.getInventory();
+
+                int slot = data[1];
+                int amount = data[2];
+                String itemName;
+                
+                byte[] bn = new byte[data.length - 3];
+                System.arraycopy( data, 3, bn, 0, bn.length );
+                itemName = new String(bn);
+
+                inv.setSlot( slot, new ItemStack( ItemType.lookup(itemName), amount ) );
+
             	break;
+
+            case RequestWorldData:
+
+                // TODO
+
+                break;
                 
             case PasswordResponse:
             	if ( server.usingPassword() ) {
