@@ -3,8 +3,6 @@ package net.dv90.starfury.world;
 import java.awt.Point;
 import java.util.HashMap;
 
-import net.dv90.starfury.world.Tile.Type;
-
 public class World {
 	// Temporary
 	private int maxWidth = 1024;
@@ -16,7 +14,7 @@ public class World {
     private boolean bloodMoon = false;
     
     private String worldName = null;
-    private HashMap< Point, Tile > tiles = new HashMap< Point, Tile >();
+    private HashMap< Point, Zone > zones = new HashMap< Point, Zone >();
     private Point spawn;
     
     public World(String worldName)
@@ -32,18 +30,15 @@ public class World {
     	return maxWidth;
     }
     
-    public Tile getTile( Point point ) {
-    	return tiles.get( point );
+    public Zone getZone( Point point ) {
+    	return zones.get( point );
     }
     
-    public void setTile( Point point, Tile tile ) {
-    	if ( point == null )
+    public void setZone( Point point, Zone zone ) {
+    	if ( point == null || zone == null )
     		return;
     	
-    	if ( tile == null )
-    		tile = new Tile( Type.Air );
-    	
-    	tiles.put( point, tile );
+    	zones.put( point, zone );
     }
     
     public Point getSpawn() {

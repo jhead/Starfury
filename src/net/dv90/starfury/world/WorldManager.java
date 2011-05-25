@@ -33,8 +33,8 @@ public class WorldManager {
 
     public static World generate(String worldName) throws Exception
     {
-        File worldFile = new File("worlds/" + worldName + ".wld");
-        worldFile.createNewFile();
+        //File worldFile = new File("worlds/" + worldName + ".wld");
+        //worldFile.createNewFile();
         
         World world = new World( worldName );
         generateDebugWorld( world );
@@ -52,17 +52,27 @@ public class WorldManager {
      */
     
     public static void generateDebugWorld( World world ) {
-    	for ( int x = 0; x < world.getWidth(); x++ ) {
-    		for ( int y = 0; y < 60; y++ ) {
-    			Point point = new Point( x, y );
+    	for ( int zoneX = 0; zoneX < 3; zoneX++ ) {
+    		for ( int zoneY = 0; zoneY < 5; zoneY++ ) {
+    			Zone zone = new Zone( world, new Point( zoneX, zoneY ) );
     			
-    			if ( y <= 20 ) {
-    				world.setTile( point, new Tile( Type.Dirt ) );
-    			}
+    			for ( int x = 0; x < 20; x++ ) {
+    	    		for ( int y = 0; y < 60; y++ ) {
+    	    			Point point = new Point( x, y );
+    	    			
+    	    			if ( y <= 20 ) {
+    	    				zone.setTile( point, new Tile( Type.Dirt ) );
+    	    			}
+    	    		}
+    	    	}
+    			
+    			world.setZone( zone.getCoord(), zone );
     		}
     	}
     	
-    	world.setSpawn( new Point( world.getWidth() / 2, 23 ) );
+    	
+    	
+    	world.setSpawn( new Point( 30, 23 ) );
     }
 
     public static void saveWorldDebugging( World world ) {
