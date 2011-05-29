@@ -288,9 +288,9 @@ public class Client extends Thread {
             	World world = server.getWorld();
             	
             	response.append( BitConverter.toBytes( ( int ) world.getTime() ) );
-            	response.append( BitConverter.toBytes( world.isDay() ? 1 : 0 )[ 0 ] );
-            	response.append( BitConverter.toBytes( world.getMoonPhase().getState() )[ 0 ] );
-            	response.append( BitConverter.toBytes( world.isBloodmoon() ? 1 : 0 )[ 0 ] );
+            	response.append( BitConverter.toBytes( world.isDay() ? 1 : 0 )[ 0 ] ); // Day
+            	response.append( BitConverter.toBytes( world.getMoonPhase().getState() )[ 0 ] ); // Moon phase
+            	response.append( BitConverter.toBytes( world.isBloodmoon() ? 1 : 0 )[ 0 ] ); // Bloodmoon
             	
             	response.append( BitConverter.toBytes( world.getWidth() ) );
             	response.append( BitConverter.toBytes( 60 ) );
