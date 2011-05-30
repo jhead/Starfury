@@ -13,6 +13,7 @@ import net.dv90.starfury.inventory.ItemStack;
 import net.dv90.starfury.inventory.ItemType;
 import net.dv90.starfury.inventory.PlayerInventory;
 import net.dv90.starfury.logging.*;
+import net.dv90.starfury.misc.Location;
 
 import net.dv90.starfury.util.BitConverter;
 import net.dv90.starfury.util.MathUtil;
@@ -330,6 +331,7 @@ public class Client extends Thread {
 
                 response.append(BitConverter.toBytes(0)); // World ID
                 response.append(world.getWorldName().getBytes());
+                write(response.create());
 
                 break;
             case TileBlockRequest:
@@ -418,9 +420,13 @@ public class Client extends Thread {
 
                 break;
             case Spawn:
-                response = new Packet(Protocol.SendSpawn);
-                response.append(BitConverter.toBytes(200));
-                response.append(BitConverter.toBytes(300));
+                packet = new Packet(Protocol.SendSpawn);
+                write(packet.create());
+                break;
+            case SendSpawn:
+                response = new Packet(Protocol.Spawn);
+                response.append(BitConverter.toBytes((int) getServer().getSpawnLocation().getX()));
+                response.append(BitConverter.toBytes((int) getServer().getSpawnLocation().getY()));
                 write(response.create());
                 break;
             case PlayerHealthUpdate:
@@ -468,16 +474,62 @@ public class Client extends Thread {
 
                     break;
                 }
-                
+            case NpcInfo:
+                break;
+            case Message:
+                break;
             case PvpMode:
+                player.setPvpState(!player.getPvpState());
+                break;
             case PlayerUpdateOne:
+                byte m_action = 0;
+                /*
+                 * This needs to be implemented.
+                if( control up )
+                    m_action += 1;
+                if( control down )
+                    m_action += 2;
+                if( control left )
+                    m_action += 4;
+                if( control right )
+                    m_action += 8;
+                if( control jump )
+                    m_action += 16;
+                if( control item use )
+                    m_action += 32;
+                if( direction == 1 ) 
+                    m_action += 64;
+                response = new Packet(Protocol.PlayerUpdateTwo);
+                response.append(BitConverter.toBytes(clientId));
+                response.append(m_action);
+                response.append((byte) 1); // Needs to be getItemInHand() & getTypeId()
+                response.append(BitConverter.toBytes(player.getLocation().getX()));
+                response.append(BitConverter.toBytes(player.getLocation().getY()));
+                response.append(BitConverter.toBytes(0)); // Velocity X - Do this.
+                response.append(BitConverter.toBytes(0)); // Velocity Y - Do this.
+                write(response.create());
+                 */
+                break;
             case ZoneInfo:
+                Location loc = player.getLocation();
+                Point p = new Point((int)loc.getX(), (int)loc.getY());
+                world = getServer().getWorld();
+                response = new Packet(Protocol.ZoneInfo);
+                response.append(BitConverter.toBytes(clientId));
+                response.append(BitConverter.toBytes(world.getZone(p).isEvil() ? 1 : 0)); // is zone evil
+                response.append(BitConverter.toBytes(world.getZone(p).isMeteor() ? 1 : 0)); // is zone meteor
+                response.append(BitConverter.toBytes(world.getZone(p).isDungeon() ? 1 : 0)); // is zone dungeon
+                response.append(BitConverter.toBytes(world.getZone(p).isJungle() ? 1 : 0)); // is zone jungle
+                write(response.create());
+                break;
             case NpcTalk:
+                // byte player_id
+                // short npc_id
+                break;
             case ManipulateTile:
-                // we have nothing here, but don't crash the client!
+                break;
             default:
                 disconnect("Illegal packet received.");
-
                 break;
         }
 

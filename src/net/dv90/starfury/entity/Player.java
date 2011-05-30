@@ -17,6 +17,7 @@ public class Player extends Entity {
     private PlayerInventory inventory;
     private Location location;
     private int hairStyle = 0;
+    private boolean pvpEnabled = false;
 
     public Player( Client client ) {
             this.client = client;
@@ -34,6 +35,16 @@ public class Player extends Entity {
 
     public String getName() {
             return name;
+    }
+    
+    public boolean getPvpState()
+    {
+        return pvpEnabled;
+    }
+    
+    public void setPvpState(boolean state)
+    {
+        pvpEnabled = state;
     }
 
     public void setName( String name ) {
@@ -79,6 +90,16 @@ public class Player extends Entity {
     public PlayerInventory getInventory()
     {
         return inventory;
+    }
+    
+    public Location getLocation()
+    {
+        return location;
+    }
+    
+    public void setLocation( Location loc )
+    {
+        location = loc;
     }
 
     public enum PlayerColor {

@@ -53,7 +53,7 @@ public class Server implements Runnable
 
         maxPlayers = (int) config.getValue( "max-players", 8 );
         clientVersion = "Terraria" + config.getValue( "client-version", "0" ).trim();
-        worldName = config.getValue( "world-name", "" ).trim();
+        worldName = config.getValue( "world-name", "world1" ).trim();
         serverPassword = config.getValue("server-password", "").trim();
     }
 

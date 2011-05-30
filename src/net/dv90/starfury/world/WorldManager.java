@@ -2,6 +2,11 @@ package net.dv90.starfury.world;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileInputStream;
+import java.lang.ref.SoftReference;
+import java.nio.ByteOrder;
+import net.dv90.starfury.inventory.ItemStack;
+import net.dv90.starfury.inventory.ItemType;
 
 import net.dv90.starfury.logging.*;
 import net.dv90.starfury.world.Tile.Type;
@@ -24,9 +29,7 @@ public class WorldManager {
         
         if( !worldFile.exists() )
             return WorldManager.generate(worldName);
-
-        // TODO
-
+        
         Logger.log(LogLevel.INFO, "Loaded world '" + worldName + "'.");
         return loadWorldDebugging( worldName );
     }

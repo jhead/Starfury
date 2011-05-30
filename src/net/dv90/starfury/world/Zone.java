@@ -9,7 +9,10 @@ public class Zone {
 	private HashMap< Point, Tile > tiles = new HashMap< Point, Tile >();
 	private World world;
 	private Point coord;
-	
+        private boolean isEvil = false;
+        private boolean isMeteor = false;
+        private boolean isDungeon = false;
+        private boolean isJungle = false;
 	
 	public Zone( World world, Point coord ) {
 		this.coord = coord;
@@ -55,4 +58,21 @@ public class Zone {
 		
 		tiles.put( coord, tile );
 	}
+        
+        public boolean isEvil()
+        {
+            return isEvil;
+        }
+        public boolean isMeteor()
+        {
+            return isMeteor;
+        }
+        public boolean isDungeon()
+        {
+            return isDungeon;
+        }
+        public boolean isJungle()
+        {
+            return isJungle;
+        }
 }
