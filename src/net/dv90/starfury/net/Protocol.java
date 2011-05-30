@@ -29,8 +29,10 @@ public enum Protocol {
         ZoneInfo ( 0x24 ),
         PasswordRequest ( 0x25 ),
         PasswordResponse ( 0x26 ),
+        NpcTalk ( 0x28 ),
         PlayerManaUpdate( 0x2A ),
-        PvpTeam ( 0x2D );
+        PvpTeam ( 0x2D ),
+        SendSpawn ( 0x31 );
 	
 	private static final HashMap< Integer, Protocol > lookupMap = new HashMap<Integer, Protocol>();
 	

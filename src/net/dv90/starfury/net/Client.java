@@ -393,7 +393,10 @@ public class Client extends Thread {
                 packet.append(BitConverter.toBytes(sectionX + 2));
                 packet.append(BitConverter.toBytes(sectionY + 1));
                 write(packet.create());
-
+                
+                response = new Packet(Protocol.Spawn);
+                write(response.create());
+                
                 // TODO
                 /*
                 for (int i = 0; i < 200; i++) {
@@ -413,6 +416,12 @@ public class Client extends Thread {
                 }
                 */
 
+                break;
+            case Spawn:
+                response = new Packet(Protocol.SendSpawn);
+                response.append(BitConverter.toBytes(200));
+                response.append(BitConverter.toBytes(300));
+                write(response.create());
                 break;
             case PlayerHealthUpdate:
                 if ((int) data[index] != this.clientId) {
@@ -459,7 +468,13 @@ public class Client extends Thread {
 
                     break;
                 }
-
+                
+            case PvpMode:
+            case PlayerUpdateOne:
+            case ZoneInfo:
+            case NpcTalk:
+            case ManipulateTile:
+                // we have nothing here, but don't crash the client!
             default:
                 disconnect("Illegal packet received.");
 
