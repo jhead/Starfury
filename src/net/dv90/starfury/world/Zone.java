@@ -26,12 +26,24 @@ public class Zone {
 	public Tile getTile( Point coord ) {
 		if ( coord == null )
 			return null;
-		
-		return tiles.get( coord );
+
+                // System.out.println(coord.getX() + " " + coord.getY());
+                return tiles.get(coord);
+
+                // System.out.println(coord.getX() + " " + coord.getY());
+                /*
+		for( Point p : tiles.keySet() )
+                {
+                    // System.out.println("(" + p.getX() + "," + p.getY() + ")");
+                    if( coord.equals(p) ) //Math.round(p.getX()) == Math.round(coord.getX()) && Math.round(p.getY()) == Math.round(coord.getY()) )
+                        return tiles.get(p);
+                }*/
+
+                // return null;
 	}
 
-        public Tile[] getTiles() {
-            return tiles.values().toArray(new Tile[] { });
+        public HashMap< Point, Tile > getTiles() {
+            return new HashMap< Point, Tile >( tiles );
         }
 	
 	public void setTile( Point coord, Tile tile ) {

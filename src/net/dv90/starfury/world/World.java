@@ -77,7 +77,15 @@ public class World {
     }
 
     public Tile getTile(int x, int y) {
-        // TODO
+        Tile t;
+        
+        for( Zone z : zones.values() )
+        {
+            t = z.getTile(new Point(x, y));
+            if( t != null )
+                return t;
+        }
+
         return null;
     }
 

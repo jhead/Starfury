@@ -175,8 +175,8 @@ public class Client extends Thread {
         if( sectionX >= 0 && sectionY >= 0  )
             loadedTiles[sectionX][sectionY] = true;
 
-        int toSendX = sectionX * 200;
-        int toSendY = sectionY * 150;
+        int toSendX = sectionX;// * 200;
+        int toSendY = sectionY;// * 150;
         
         for (int i = toSendY; i < (toSendY + 150); i++) {
             
@@ -187,7 +187,10 @@ public class Client extends Thread {
 
             for (int j = toSendX; j < (200 + toSendX); j++) {
                 byte flag = 0;
-                Tile tile = getServer().getWorld().getTile(j, i); // getTile always returns null right now
+                Tile tile = getServer().getWorld().getTile(j, i);
+                if( tile == null) // This needs to be fixed, but it works for now...
+                    continue;
+
                 if (tile.isActive()) {
                     flag |= TileFlags.ACTIVE;
                 }
@@ -357,7 +360,6 @@ public class Client extends Thread {
                 response.append(BitConverter.toBytes(num16));
                 response.append("Receiving tile data".getBytes());
                 write(response.create());
-                System.out.println("Sent 'Receiving tile data'.");
 
                 int sectionX = World.getSectionX(getServer().getSpawnLocation().getXTile());
                 int sectionY = World.getSectionX(getServer().getSpawnLocation().getYTile());

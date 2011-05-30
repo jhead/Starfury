@@ -52,17 +52,24 @@ public class WorldManager {
      */
     
     public static void generateDebugWorld( World world ) {
-    	for ( int zoneX = 0; zoneX < 3; zoneX++ ) {
-    		for ( int zoneY = 0; zoneY < 5; zoneY++ ) {
+        int zoneWidth = 250;
+        int zoneHeight = 100;
+        int count = 0;
+
+    	for ( int zoneX = -3; zoneX < 3; zoneX++ ) {
+    		for ( int zoneY = -5; zoneY < 5; zoneY++ ) {
     			Zone zone = new Zone( world, new Point( zoneX, zoneY ) );
     			
-    			for ( int x = 0; x < 20; x++ ) {
-    	    		for ( int y = 0; y < 60; y++ ) {
+    			for ( int x = (zoneX * zoneWidth) - (zoneWidth / 2) ; x < (zoneX * zoneWidth) + (zoneWidth / 2); x++ ) {
+    	    		for ( int y = (zoneY * zoneHeight) - (zoneHeight / 2); y < (zoneY * zoneHeight) + (zoneHeight / 2); y++ ) {
     	    			Point point = new Point( x, y );
-    	    			
+                                // System.out.println("(" + x + "," + y + ")");
+                                
     	    			if ( y <= 20 ) {
     	    				zone.setTile( point, new Tile( Type.Dirt ) );
     	    			}
+
+                                count++;
     	    		}
     	    	}
     			
@@ -70,7 +77,7 @@ public class WorldManager {
     		}
     	}
     	
-    	
+    	Logger.log(LogLevel.INFO, "Created " + count + " tiles.");
     	
     	world.setSpawn( new Point( 30, 23 ) );
     }
