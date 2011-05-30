@@ -29,6 +29,10 @@ public class Zone {
 		
 		return tiles.get( coord );
 	}
+
+        public Tile[] getTiles() {
+            return tiles.values().toArray(new Tile[] { });
+        }
 	
 	public void setTile( Point coord, Tile tile ) {
 		if ( coord == null )

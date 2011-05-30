@@ -16,6 +16,8 @@ import net.dv90.starfury.logging.*;
 
 import net.dv90.starfury.util.BitConverter;
 import net.dv90.starfury.util.MathUtil;
+import net.dv90.starfury.world.Tile;
+import net.dv90.starfury.world.Tile.TileFlags;
 import net.dv90.starfury.world.World;
 
 public class Client extends Thread {
@@ -123,6 +125,7 @@ public class Client extends Thread {
             } catch (Exception e) {
                 if (state == NetworkState.Running) {
                     Logger.log(LogLevel.INFO, e.getMessage() + " [" + this.toString() + "]");
+                    e.printStackTrace();
 
                     state = NetworkState.Error;
                 }
@@ -168,18 +171,23 @@ public class Client extends Thread {
     }
 
     private void sendSection(int sectionX, int sectionY) {
-        loadedTiles[sectionX][sectionY] = true;
+
+        if( sectionX >= 0 && sectionY >= 0  )
+            loadedTiles[sectionX][sectionY] = true;
 
         int toSendX = sectionX * 200;
         int toSendY = sectionY * 150;
+        
         for (int i = toSendY; i < (toSendY + 150); i++) {
+            
             Packet packet = new Packet(Protocol.TileSection);
-            packet.append(BitConverter.toBytes((short)200));
+            packet.append(BitConverter.toBytes((short) 200));
             packet.append(BitConverter.toBytes(toSendX));
             packet.append(BitConverter.toBytes(i));
+
             for (int j = toSendX; j < (200 + toSendX); j++) {
                 byte flag = 0;
-                Tile tile = World.getWorld().getTile(j, i);
+                Tile tile = getServer().getWorld().getTile(j, i); // getTile always returns null right now
                 if (tile.isActive()) {
                     flag |= TileFlags.ACTIVE;
                 }
@@ -195,21 +203,24 @@ public class Client extends Thread {
                 packet.append(flag);
 
                 if (tile.isActive()) {
-                    packet.append(tile.getType());
-                    if (World.getWorld().isTileFrameImportant(tile.getType())) {
-                        packet.append(BitConverter.toShortBytes((short) tile.getFrameX()));
-                        packet.append(BitConverter.toShortBytes((short) tile.getFrameY()));
+                    packet.append((byte) tile.getType().getID());
+                    if (getServer().getWorld().isTileFrameImportant(tile.getType())) {
+                        packet.append(BitConverter.toBytes((short) tile.getFrameX()));
+                        packet.append(BitConverter.toBytes((short) tile.getFrameY()));
                     }
                 }
+
                 if (tile.getWall() > 0) {
                     packet.append(tile.getWall());
                 }
+
                 if (tile.getLiquid() > 0) {
                     packet.append(tile.getLiquid());
-                    packet.append(tile.isLava() ? 1 : 0);
+                    packet.append(BitConverter.toBytes(tile.isLava() ? 1 : 0));
                 }
             }
-            getClient().write(packet.create());
+            
+            write(packet.create());
         }
     }
 
@@ -322,10 +333,12 @@ public class Client extends Thread {
                 if (loadedTiles == null) {
                     loadedTiles = new boolean[getServer().getWorld().getWidth() / 200][getServer().getWorld().getHeight() / 150];
                 }
+
                 int x = BitConverter.toInteger(data, index, 4);
                 int y = BitConverter.toInteger(data, index + 4, 4);
 
-                System.out.println("Requesting tile " + x + ":" + y);
+                System.out.println("Requesting tile (" + x + "," + y + ")");
+                
                 boolean flag2 = true;
                 if ((x == -1) || (y == -1)) {
                     flag2 = false;
@@ -334,17 +347,69 @@ public class Client extends Thread {
                 } else if ((y < 10) || (y > (server.getWorld().getHeight() - 10))) {
                     flag2 = false;
                 }
+
                 int num16 = 1350;
                 if (flag2) {
                     num16 *= 2;
                 }
+
                 response = new Packet(Protocol.TileLoading);
                 response.append(BitConverter.toBytes(num16));
                 response.append("Receiving tile data".getBytes());
                 write(response.create());
+                System.out.println("Sent 'Receiving tile data'.");
 
                 int sectionX = World.getSectionX(getServer().getSpawnLocation().getXTile());
-                int sectionY = World.getSectionX(getServer().getSpawnLocation().getXTile());
+                int sectionY = World.getSectionX(getServer().getSpawnLocation().getYTile());
+
+                for (int n = sectionX - 2; n < (sectionX + 3); n++) {
+                    for (int num20 = sectionY - 1; num20 < (sectionY + 2); num20++) {
+                        sendSection(n, num20);
+                    }
+                }
+
+                if (flag2) {
+                    x = World.getSectionX(x);
+                    y = World.getSectionY(y);
+                    for (int num21 = x - 2; num21 < (x + 3); num21++) {
+                        for (int num22 = y - 1; num22 < (y + 2); num22++) {
+                            sendSection(num21, num22);
+                        }
+                    }
+
+                    packet = new Packet(Protocol.TileConfirmed);
+                    packet.append(BitConverter.toBytes(x - 2));
+                    packet.append(BitConverter.toBytes(y - 1));
+                    packet.append(BitConverter.toBytes(x + 2));
+                    packet.append(BitConverter.toBytes(y + 1));
+                    write(packet.create());
+                }
+
+                packet = new Packet(Protocol.TileConfirmed);
+                packet.append(BitConverter.toBytes(sectionX - 2));
+                packet.append(BitConverter.toBytes(sectionY - 1));
+                packet.append(BitConverter.toBytes(sectionX + 2));
+                packet.append(BitConverter.toBytes(sectionY + 1));
+                write(packet.create());
+
+                // TODO
+                /*
+                for (int i = 0; i < 200; i++) {
+                    if (getServer().getWorld().getItem(i).isActive()) {
+                        sendItemInfo(client, i);
+                        sendItemOwnerInfo(client, i);
+                    }
+                }
+                for (int i = 0; i < 200; i++) {
+                    if (getServer().getWorld().getNpc(i).isActive()) {
+                        sendNpcInfo(client, i);
+                    }
+                }
+                
+                if (client.getPlayer().getConnectionState() == 2) {
+                    client.getPlayer().setConnectionState(3);
+                }
+                */
 
                 break;
             case PlayerHealthUpdate:

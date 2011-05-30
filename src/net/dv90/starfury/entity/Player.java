@@ -18,7 +18,6 @@ public class Player extends Entity {
     private Location location;
     private int hairStyle = 0;
 
-
     public Player( Client client ) {
             this.client = client;
             this.inventory = new PlayerInventory();

@@ -3,6 +3,7 @@ package net.dv90.starfury.world;
 import java.util.HashMap;
 
 public class Tile {
+    
     private static int[] important = {3, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 24, 26, 27, 28, 29, 31, 33, 34, 35, 36, 42, 50, 55, 61, 71, 72, 73, 74, 77, 78, 79};
 
     public static boolean isImportant(Tile tile) {
@@ -13,6 +14,7 @@ public class Tile {
         }
         return false;
     }
+
     public static class TileFlags {
 
         public static final byte ACTIVE = 1,
@@ -20,11 +22,13 @@ public class Tile {
                 WALL = 4,
                 LIQUID = 8;
     }
+    
     private Type type;
     private boolean active;
     private short frameX, frameY;
     private byte wall;
     private boolean lava;
+    private boolean light;
     private byte liquid;
 
     public Tile() {
@@ -55,6 +59,10 @@ public class Tile {
         return lava;
     }
 
+    public boolean isLight() {
+        return light;
+    }
+
     public byte getLiquid() {
         return liquid;
     }
@@ -79,7 +87,7 @@ public class Tile {
 
         static {
             for (Type type : Type.values()) {
-                lookupMap.put(type.id, type);
+                Type.lookupMap.put(type.id, type);
             }
         }
 

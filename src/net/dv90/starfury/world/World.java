@@ -2,8 +2,10 @@ package net.dv90.starfury.world;
 
 import java.awt.Point;
 import java.util.HashMap;
+import net.dv90.starfury.world.Tile.Type;
 
 public class World {
+    
     public static int getSectionX(int x) {
         return x / 200;
     }
@@ -74,6 +76,11 @@ public class World {
         return rockLayer;
     }
 
+    public Tile getTile(int x, int y) {
+        // TODO
+        return null;
+    }
+
     public boolean isDay() {
         return dayTime;
     }
@@ -88,6 +95,11 @@ public class World {
 
     public MoonPhase getMoonPhase() {
         return phase;
+    }
+
+    public boolean isTileFrameImportant(Type type) {
+        // TODO
+        return false;
     }
 
     public enum MoonPhase {
