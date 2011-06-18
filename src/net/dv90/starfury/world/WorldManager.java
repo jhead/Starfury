@@ -87,8 +87,10 @@ public class WorldManager {
     }
     
     public static World loadWorldDebugging(String worldName, int protocolVersion) throws IOException {
-    	DataInputStream dataStream = new DataInputStream(new FileInputStream("Worlds\\" + worldName + ".wld" ));
-    	int compatabilityProtocol = dataStream.readInt();
+		System.out.println("Loading World File: " + worldName);
+		DataInputStream dataStream = new DataInputStream(new FileInputStream("Worlds\\" + worldName + ".wld" ));
+    	int compatabilityProtocol = (int)dataStream.readByte();
+		System.out.println(compatabilityProtocol);
     	if(compatabilityProtocol != protocolVersion) {
     		System.out.println("Incompatible World File!");
     		dataStream.close();
@@ -98,16 +100,16 @@ public class WorldManager {
     	}
     	
     	World world = new World(dataStream.readUTF());
-    	world.setId(dataStream.readInt());
+    	world.setId((int)dataStream.readByte());
     	dataStream.readInt();
     	dataStream.readInt();
     	dataStream.readInt();
     	dataStream.readInt();
-    	world.setHeight(dataStream.readInt());
-    	world.setWidth(dataStream.readInt());
-    	world.setSpawn(new Point(dataStream.readInt(), dataStream.readInt()));
-    	world.setDirtLayer(dataStream.readInt());
-    	world.setRockLayer(dataStream.readInt());
+    	world.setHeight((int)dataStream.readByte());
+    	world.setWidth((int)dataStream.readByte());
+    	world.setSpawn(new Point((int)dataStream.readByte(), (int)dataStream.readByte()));
+    	world.setDirtLayer((int)dataStream.readByte());
+    	world.setRockLayer((int)dataStream.readByte());
     	dataStream.readDouble(); //Temp time
     	dataStream.readBoolean(); //Temp Day time
     	dataStream.readInt(); //Temp Mood Phase
@@ -128,6 +130,8 @@ public class WorldManager {
     	//Load Tiles
     	//Settle Liquids
     	
-    	return null;
+    	dataStream.close();
+    	
+    	return world;
     }
 }
