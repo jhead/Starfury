@@ -1,13 +1,10 @@
 package net.dv90.starfury.world;
 
 import java.awt.Point;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.lang.ref.SoftReference;
-import java.nio.ByteOrder;
-import net.dv90.starfury.inventory.ItemStack;
-import net.dv90.starfury.inventory.ItemType;
-
+import java.io.IOException;
 import net.dv90.starfury.logging.*;
 import net.dv90.starfury.world.Tile.Type;
 
@@ -19,7 +16,7 @@ public class WorldManager {
     		folder.mkdir();
     }
     
-    public static World load(String worldName) throws Exception
+    public static World load(String worldName, int ProtocolVer) throws Exception
     {
         worldName = worldName.trim();
         if( worldName == null || worldName.length() == 0 )
@@ -31,7 +28,7 @@ public class WorldManager {
             return WorldManager.generate(worldName);
         
         Logger.log(LogLevel.INFO, "Loaded world '" + worldName + "'.");
-        return loadWorldDebugging( worldName );
+        return loadWorldDebugging( worldName, ProtocolVer );
     }
 
     public static World generate(String worldName) throws Exception
@@ -89,7 +86,52 @@ public class WorldManager {
     	
     }
     
-    public static World loadWorldDebugging( String worldName ) {
-    	return null;
+    public static World loadWorldDebugging(String worldName, int protocolVersion) throws IOException {
+		System.out.println("Loading World File: " + worldName);
+		DataInputStream dataStream = new DataInputStream(new FileInputStream("Worlds\\" + worldName + ".wld" ));
+    	int compatabilityProtocol = (int)dataStream.readByte();
+		System.out.println(compatabilityProtocol);
+    	if(compatabilityProtocol != protocolVersion) {
+    		System.out.println("Incompatible World File!");
+    		dataStream.close();
+    		return null;
+    	} else {
+    		System.out.println("Compatible World File!");
+    	}
+    	
+    	World world = new World(dataStream.readUTF());
+    	world.setId((int)dataStream.readByte());
+    	dataStream.readInt();
+    	dataStream.readInt();
+    	dataStream.readInt();
+    	dataStream.readInt();
+    	world.setHeight((int)dataStream.readByte());
+    	world.setWidth((int)dataStream.readByte());
+    	world.setSpawn(new Point((int)dataStream.readByte(), (int)dataStream.readByte()));
+    	world.setDirtLayer((int)dataStream.readByte());
+    	world.setRockLayer((int)dataStream.readByte());
+    	dataStream.readDouble(); //Temp time
+    	dataStream.readBoolean(); //Temp Day time
+    	dataStream.readInt(); //Temp Mood Phase
+    	dataStream.readBoolean(); //Temp Blood Moon
+    	dataStream.readInt(); //Dungeon X
+    	dataStream.readInt(); //Dungeon Y
+    	dataStream.readBoolean(); //Downed Boss #1
+    	dataStream.readBoolean(); //Downed Boss #2
+    	dataStream.readBoolean(); //Downed Boss #3
+    	dataStream.readBoolean(); //Shadow Orb Smashed?
+    	dataStream.readBoolean(); //Spawn Meteor?
+    	dataStream.readByte(); //Shadow Orb Count
+    	dataStream.readInt(); //Invasion Delay
+    	dataStream.readInt(); //Invasion Size
+    	dataStream.readInt(); //Invasion Type
+    	dataStream.readDouble(); //Invasion X
+    	
+    	//Load Tiles
+    	//Settle Liquids
+    	
+    	dataStream.close();
+    	
+    	return world;
     }
 }

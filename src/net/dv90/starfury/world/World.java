@@ -16,6 +16,7 @@ public class World {
 
     // Temporary
 
+    private int id = 0;
     private int maxWidth = 1024;
     private int maxHeight = 1024;
     private int dirtLayer = 40;
@@ -34,14 +35,6 @@ public class World {
 
     public String getWorldName() {
         return worldName;
-    }
-
-    public int getWidth() {
-        return maxWidth;
-    }
-
-    public int getHeight() {
-        return maxHeight;
     }
 
     public Zone getZone(Point point) {
@@ -66,14 +59,6 @@ public class World {
         }
 
         spawn = point;
-    }
-
-    public int getDirtLayer() {
-        return dirtLayer;
-    }
-
-    public int getRockLayer() {
-        return rockLayer;
     }
 
     public Tile getTile(int x, int y) {
@@ -110,7 +95,47 @@ public class World {
         return false;
     }
 
-    public enum MoonPhase {
+    public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setWidth(int maxWidth) {
+		this.maxWidth = maxWidth;
+	}
+
+	public int getWidth() {
+		return maxWidth;
+	}
+
+	public void setHeight(int maxHeight) {
+		this.maxHeight = maxHeight;
+	}
+
+	public int getHeight() {
+		return maxHeight;
+	}
+
+	public void setDirtLayer(int dirtLayer) {
+		this.dirtLayer = dirtLayer;
+	}
+
+	public int getDirtLayer() {
+		return dirtLayer;
+	}
+
+	public void setRockLayer(int rockLayer) {
+		this.rockLayer = rockLayer;
+	}
+
+	public int getRockLayer() {
+		return rockLayer;
+	}
+
+	public enum MoonPhase {
 
         One(0),
         Two(1),

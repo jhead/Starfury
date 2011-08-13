@@ -31,6 +31,7 @@ public class Server implements Runnable
     private String clientVersion = "";
     private String worldName = "";
     private Integer maxPlayers;
+    private Integer protocolVersion;
 
     public Server(ServerConfig config)
     {
@@ -45,6 +46,15 @@ public class Server implements Runnable
 
     private void setupConfig()
     {
+
+        config.setValue("server-ip", "127.0.0.1");
+        config.setValue("server-port", 7777);
+        config.setValue("log-level", "DEBUG");
+        config.setValue("max-players", 8);
+        config.setValue("client-version", "9");
+        config.setValue("world-name", "world1");
+        config.setValue("server-password", "");
+    	
         String ip = config.getValue( "server-ip", "127.0.0.1" );
         bindPort = (int) config.getValue( "server-port", 7777 );
         bindAddress = new InetSocketAddress( ip, bindPort );
@@ -52,7 +62,8 @@ public class Server implements Runnable
         Logger.setLevel( LogLevel.valueOf( config.getValue( "log-level", "DEBUG" ) ) );
 
         maxPlayers = (int) config.getValue( "max-players", 8 );
-        clientVersion = "Terraria" + config.getValue( "client-version", "0" ).trim();
+        protocolVersion = Integer.parseInt(config.getValue( "client-version", "9" ).trim());
+        clientVersion = "Terraria" + protocolVersion;
         worldName = config.getValue( "world-name", "world1" ).trim();
         serverPassword = config.getValue("server-password", "").trim();
     }
@@ -62,7 +73,7 @@ public class Server implements Runnable
         if( worldName.length() == 0 || worldName == null )
             throw new Exception("No world specified.");
         else
-            this.world = WorldManager.load(worldName);
+            this.world = WorldManager.load(worldName, protocolVersion);
     }
     
     public World getWorld() {
