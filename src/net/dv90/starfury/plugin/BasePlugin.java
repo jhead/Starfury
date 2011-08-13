@@ -2,9 +2,10 @@ package net.dv90.starfury.plugin;
 
 import net.dv90.starfury.net.Server;
 
+@SuppressWarnings("unused")
 public abstract class BasePlugin implements Plugin {
     
-    private String pluginName = "";
+	private String pluginName = "";
     private String pluginAuthor = "";
     private String pluginVersion = "";
     

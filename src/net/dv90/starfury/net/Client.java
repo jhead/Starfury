@@ -482,7 +482,7 @@ public class Client extends Thread {
                 player.setPvpState(!player.getPvpState());
                 break;
             case PlayerUpdateOne:
-                byte m_action = 0;
+                //byte m_action = 0;
                 /*
                  * This needs to be implemented.
                 if( control up )
