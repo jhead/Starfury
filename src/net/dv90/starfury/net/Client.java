@@ -107,7 +107,7 @@ public class Client extends Thread {
                 proto = Protocol.lookup(id);
 
                 if (proto == null) {
-                    throw new Exception("Unrecognized packet with ID " + id);
+                    throw new Exception("Unrecognized packet (0x" + Integer.toHexString(id) + ")");
                 }
 
                 packet = new Packet(proto);
@@ -245,7 +245,7 @@ public class Client extends Thread {
         switch (packet.getProtocol()) {
             case ConnectRequest:
                 if (!new String(data).equals(server.getClientVersion())) {
-                    disconnect("Incorrect client version.");
+                    disconnect("Incorrect client version. (" + new String(data) + ")");
 
                     break;
                 }
@@ -284,6 +284,8 @@ public class Client extends Thread {
                     Color color = new Color(r, g, b);
                     player.setColor(part, color);
                 }
+                index++;
+                index++;
 
                 byte[] name = new byte[data.length - index];
                 System.arraycopy(data, index, name, 0, name.length);
@@ -443,7 +445,6 @@ public class Client extends Thread {
                 player.setStat(PlayerStat.MaxHealth, BitConverter.toInteger(data, index, 2));
 
                 break;
-
             case PlayerManaUpdate:
                 if ((int) data[index] != this.clientId) {
                     disconnect("Client ID mismatch.");
@@ -458,7 +459,6 @@ public class Client extends Thread {
                 player.setStat(PlayerStat.MaxMana, BitConverter.toInteger(data, index, 2));
 
                 break;
-
             case PasswordResponse:
                 if (server.usingPassword()) {
                     String password = new String(packet.getData());
@@ -474,12 +474,19 @@ public class Client extends Thread {
 
                     break;
                 }
+                break;
             case NpcInfo:
                 break;
             case Message:
+                response = new Packet(Protocol.Message);
+                response.append(BitConverter.toBytes(clientId));
+                response.append(new String(data).substring(4).getBytes());
                 break;
             case PvpMode:
                 player.setPvpState(!player.getPvpState());
+                break;
+            case PvpTeam:
+                // TODO: player.setPvpTeam();
                 break;
             case PlayerUpdateOne:
                 //byte m_action = 0;
@@ -528,8 +535,10 @@ public class Client extends Thread {
                 break;
             case ManipulateTile:
                 break;
+            case PlayerSetBuff:
+                break;
             default:
-                disconnect("Illegal packet received.");
+                disconnect("Illegal packet received. (0x" + Integer.toHexString(packet.getProtocol().getID()) + ")");
                 break;
         }
 

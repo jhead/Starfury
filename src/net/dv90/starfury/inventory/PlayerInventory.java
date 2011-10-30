@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class PlayerInventory {
 
-    public static final int MAX_INVENTORY_SLOTS = 52;
+    public static final int MAX_INVENTORY_SLOTS = 59;
     
     private ArrayList<ItemStack> slots;
 

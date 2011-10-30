@@ -32,14 +32,15 @@ public enum Protocol {
         NpcTalk ( 0x28 ),
         PlayerManaUpdate( 0x2A ),
         PvpTeam ( 0x2D ),
-        SendSpawn ( 0x31 );
+        SendSpawn ( 0x31 ),
+        PlayerSetBuff ( 0x32 );
 	
 	private static final HashMap< Integer, Protocol > lookupMap = new HashMap<Integer, Protocol>();
 	
 	static {
-		for ( Protocol proto : Protocol.values() ) {
-			lookupMap.put( proto.id, proto );
-		}
+            for ( Protocol proto : Protocol.values() ) {
+                lookupMap.put( proto.id, proto );
+            }
 	}
 	
 	public static Protocol lookup( int id ) {

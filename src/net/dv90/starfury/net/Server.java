@@ -47,22 +47,22 @@ public class Server implements Runnable
     private void setupConfig()
     {
 
-        config.setValue("server-ip", "127.0.0.1");
+        config.setValue("server-ip", "0.0.0.0");
         config.setValue("server-port", 7777);
         config.setValue("log-level", "DEBUG");
         config.setValue("max-players", 8);
-        config.setValue("client-version", "9");
+        config.setValue("client-version", "22");
         config.setValue("world-name", "world1");
         config.setValue("server-password", "");
     	
-        String ip = config.getValue( "server-ip", "127.0.0.1" );
+        String ip = config.getValue( "server-ip", "0.0.0.0" );
         bindPort = (int) config.getValue( "server-port", 7777 );
         bindAddress = new InetSocketAddress( ip, bindPort );
         
         Logger.setLevel( LogLevel.valueOf( config.getValue( "log-level", "DEBUG" ) ) );
 
         maxPlayers = (int) config.getValue( "max-players", 8 );
-        protocolVersion = Integer.parseInt(config.getValue( "client-version", "9" ).trim());
+        protocolVersion = Integer.parseInt(config.getValue( "client-version", "22" ).trim());
         clientVersion = "Terraria" + protocolVersion;
         worldName = config.getValue( "world-name", "world1" ).trim();
         serverPassword = config.getValue("server-password", "").trim();
